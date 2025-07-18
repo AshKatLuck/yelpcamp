@@ -1,32 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Campground</title>
-  </head>
-  <body>
-    <h1>Add new Campground</h1>
-    <form action="/campgrounds" method="post">
-      <section>
-        <label for="title">Campground title</label>
-        <input
-          type="text"
-          name="campground[title]"
-          id="title"
-          placeholder="Campground title"
-        />
-      </section>
-      <section>
-        <label for="location">Campground location</label>
-        <input
-          type="text"
-          name="campground[location]"
-          placeholder="Campground location"
-        />
-      </section>
-      <button type="submit">Submit</button>
-    </form>
-    <a href="/campgrounds">Back to all campgrounds</a>
-  </body>
-</html>
+<% layout('layout/boilerplate') -%>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 offset-3">
+      <h1 class="text-center">New Campground</h1>
+      <form action="/campgrounds" method="post">
+        <section class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input
+            type="text"
+            name="campground[title]"
+            id="title"
+            placeholder=""
+            class="form-control"
+          />
+        </section>
+        <section class="mb-3">
+          <label for="location" class="form-label">Location</label>
+          <input
+            type="text"
+            name="campground[location]"
+            placeholder=""
+            class="form-control"
+          />
+        </section>
+        <section class="mb-3">          
+        <label for="price" class="mb-2">Price</label>
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1">$</span>
+          <input 
+          type="String" 
+          class="form-control" 
+          placeholder="0.00"
+          aria-describedby="basic-addon1" 
+          name="campground[price]" 
+          id="price">
+        </div>
+        
+        </section>
+        <section class="mb-3">
+          <label for="image" class="form-label">Image source</label>
+          <input
+            type="text"
+            name="campground[image]"
+            placeholder=""
+            class="form-control"
+          />
+        </section>
+        <section class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea
+            type="text"
+            name="campground[description]"
+            placeholder=""
+            class="form-control"
+            rows="3"
+          /></textarea>
+        </section>
+        <button type="submit" class="btn btn-success">Add Campground</button>
+      </form>
+      <a href="/campgrounds">Back to all campgrounds</a>
+    </div>
+  </div>
+</div>

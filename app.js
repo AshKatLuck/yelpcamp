@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 const Campground = require("./models/campground");
 const methodOverride = require("method-override");
+const engineMate = require("ejs-mate");
 
 const app = express();
 
@@ -18,6 +19,8 @@ mongoose
     console.log("MONGODB ERROR!!");
     console.error(err);
   });
+
+app.engine("ejs", engineMate);
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
