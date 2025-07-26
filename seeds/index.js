@@ -14,6 +14,12 @@ mongoose
   });
 
 const sample = (array) => array[Math.floor(Math.random() * array.length)];
+const userIds = [
+  "6883bdedd1e3b85c4c55ea1f",
+  "6883d0cdafdfe6d5259c2ba4",
+  "6883d33e4f0f42097bfa769c",
+  "6883f3d3f2f2f271bdf49c6c",
+];
 
 const seedDB = async () => {
   await Campground.deleteMany({});
@@ -28,6 +34,7 @@ const seedDB = async () => {
       image: `https://picsum.photos/400?random=${Math.random()}`,
       description:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi voluptates earum vel maxime accusantium dignissimos ipsam blanditiis repudiandae et, suscipit magnam totam odit voluptatum, veniam iste reprehenderit voluptatibus ex. A.",
+      author: `${sample(userIds)}`,
     });
     await c.save();
   }

@@ -4,6 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 const Review = require("../models/review");
 const { reviewJoiSchema } = require("../joiSchema");
 const Campground = require("../models/campground");
+const { isLoggedIn, isReviewAuthor } = require("../middleware");
 
 const validateReviews = (req, res, next) => {
   const { error } = reviewJoiSchema.validate(req.body);
@@ -17,11 +18,13 @@ const validateReviews = (req, res, next) => {
 
 router.post(
   "/",
+  isLoggedIn,
   validateReviews,
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
     const review = new Review(req.body.review);
+    review.author = req.user._id;
     campground.reviews.push(review);
     await campground.save();
     await review.save();
@@ -32,6 +35,8 @@ router.post(
 
 router.delete(
   "/:reviewId",
+  isLoggedIn,
+  isReviewAuthor,
   catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });

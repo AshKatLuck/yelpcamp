@@ -2,23 +2,10 @@ const express = require("express");
 const router = express.Router();
 const Campground = require("../models/campground");
 const catchAsync = require("../utils/catchAsync");
-const { campgroundJoiSchema } = require("../joiSchema");
-const isLoggedIn = require("../middleware");
+// const { campgroundJoiSchema } = require("../joiSchema");
+const { isLoggedIn, isAuthor, validateCampgrounds } = require("../middleware");
 // const flash = require("connect-flash");
 // const session = require("express-session");
-
-//Joi middleware functions
-const validateCampgrounds = (req, res, next) => {
-  console.log("inside validateCampgrounds");
-  const { error } = campgroundJoiSchema.validate(req.body);
-  console.log(error);
-  if (error) {
-    const message = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(message, 400);
-  } else {
-    next();
-  }
-};
 
 router.get(
   "/",
@@ -38,6 +25,7 @@ router.post(
   validateCampgrounds,
   catchAsync(async (req, res, next) => {
     const campground = new Campground(req.body.campground);
+    campground.author = req.user._id;
     await campground.save();
     req.flash("success", "New Campground created successfully!!");
     res.redirect(`/campgrounds/${campground.id}`);
@@ -47,6 +35,7 @@ router.post(
 router.get(
   "/:id/edit",
   isLoggedIn,
+  isAuthor,
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
 
@@ -62,10 +51,10 @@ router.get(
 router.patch(
   "/:id",
   isLoggedIn,
+  isAuthor,
   validateCampgrounds,
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    // const campground = req.body.campground;
 
     await Campground.findByIdAndUpdate(
       { _id: id },
@@ -81,6 +70,7 @@ router.patch(
 router.delete(
   "/:id/delete",
   isLoggedIn,
+  isAuthor,
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete({ _id: id });
@@ -93,9 +83,14 @@ router.get(
   "/:id",
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    const campground = await Campground.findById({ _id: id }).populate(
-      "reviews"
-    );
+    const campground = await Campground.findById({ _id: id })
+      .populate({
+        path: "reviews",
+        populate: {
+          path: "author",
+        },
+      })
+      .populate("author");
     if (!campground) {
       req.flash("error", "Cannot find the campground. Sorry!!");
       return res.redirect("/campgrounds");

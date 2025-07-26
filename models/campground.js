@@ -15,6 +15,10 @@ const CampgroundSchema = new Schema({
       ref: "Review",
     },
   ],
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 CampgroundSchema.post("findOneAndDelete", async function (data) {
