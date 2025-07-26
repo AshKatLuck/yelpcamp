@@ -5,12 +5,14 @@ const methodOverride = require("method-override");
 const engineMate = require("ejs-mate");
 const catchAsync = require("./utils/catchAsync");
 const ExpressError = require("./utils/ExpressError");
-const Review = require("./models/review");
-const { campgroundJoiSchema, reviewJoiSchema } = require("./joiSchema");
 const campgroundsRouter = require("./routes/campgrounds");
 const reviewsRouter = require("./routes/reviews");
+const usersRouter = require("./routes/users");
 const session = require("express-session");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user");
 
 const app = express();
 
@@ -33,6 +35,7 @@ app.engine("ejs", engineMate);
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+//session configuration
 const sessionConfig = {
   secret: "badsecret",
   saveUninitialized: true,
@@ -46,17 +49,34 @@ const sessionConfig = {
 
 app.use(session(sessionConfig));
 
+//passport stuff has to be after session config
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 //middleware for flash
 
 app.use(flash());
 app.use((req, res, next) => {
+  console.log("app.use req.session");
+  console.log(req.session);
+  res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
 });
 
+app.use("/", usersRouter);
 app.use("/campgrounds/:id/review", reviewsRouter);
 app.use("/campgrounds", campgroundsRouter);
+
+// app.get("/fakeUser", async (req, res) => {
+//   const user = new User({ email: "asha@gmail.com", username: "asha" });
+//   const userWithHashedPassword = await User.register(user, "karthika");
+//   res.send(userWithHashedPassword);
+// });
 
 app.get("/", (req, res) => {
   res.render("home");

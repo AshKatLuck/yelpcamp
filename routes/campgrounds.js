@@ -3,6 +3,7 @@ const router = express.Router();
 const Campground = require("../models/campground");
 const catchAsync = require("../utils/catchAsync");
 const { campgroundJoiSchema } = require("../joiSchema");
+const isLoggedIn = require("../middleware");
 // const flash = require("connect-flash");
 // const session = require("express-session");
 
@@ -27,12 +28,13 @@ router.get(
   })
 );
 
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
   res.render("campgrounds/new");
 });
 
 router.post(
   "/",
+  isLoggedIn,
   validateCampgrounds,
   catchAsync(async (req, res, next) => {
     const campground = new Campground(req.body.campground);
@@ -44,8 +46,10 @@ router.post(
 
 router.get(
   "/:id/edit",
+  isLoggedIn,
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
+
     const campground = await Campground.findById({ _id: id });
     if (!campground) {
       req.flash("error", "Cannot find the campground. Sorry!!");
@@ -57,6 +61,7 @@ router.get(
 
 router.patch(
   "/:id",
+  isLoggedIn,
   validateCampgrounds,
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
@@ -75,6 +80,7 @@ router.patch(
 
 router.delete(
   "/:id/delete",
+  isLoggedIn,
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete({ _id: id });
