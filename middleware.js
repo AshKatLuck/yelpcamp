@@ -5,9 +5,7 @@ const Review = require("./models/review");
 
 //Joi middleware functions
 module.exports.validateCampgrounds = (req, res, next) => {
-  console.log("inside validateCampgrounds");
   const { error } = campgroundJoiSchema.validate(req.body);
-  console.log(error);
   if (error) {
     const message = error.details.map((el) => el.message).join(",");
     throw new ExpressError(message, 400);

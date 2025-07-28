@@ -4,13 +4,12 @@
   <div class="row">
     <div class="col-md-6 offset-3">
       <h1 class="text-center">New Campground</h1>
-      <form action="/campgrounds" method="post" novalidate class="validated-form">
+      <form action="/campgrounds" method="post" novalidate class="validated-form" enctype="multipart/form-data">
         <section class="mb-3">
           <label for="title" class="form-label">Title</label>
           <input
             type="text"
             name="campground[title]"
-            id="title"
             placeholder=""
             class="form-control"
             required
@@ -42,16 +41,12 @@
         </div>
         
         </section>
-        <section class="mb-3">
-          <label for="image" class="form-label">Image source</label>
-          <input
-            type="text"
-            name="campground[image]"
-            placeholder=""
-            class="form-control"
-            required
-          />
-        </section>
+        <div class="mb-3 custom-file">
+          <span>Upload files:</span>
+              <label for="image" class="form-label custom-file-label"></label>
+              <input class="form-control" type="file" id="image" name="image" multiple>
+        </div>
+
         <section class="mb-3">
           <label for="description" class="form-label">Description</label>
           <textarea

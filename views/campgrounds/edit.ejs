@@ -5,7 +5,7 @@
   <div class="row">
     <div class="col-md-6 offset-3">
       <h1 class="text-center">Edit Campground</h1>
-      <form action="/campgrounds/<%=campground.id  %>?_method=PATCH" method="post" novalidate class="validated-form">
+      <form action="/campgrounds/<%=campground.id  %>?_method=PATCH" method="post" novalidate class="validated-form" enctype="multipart/form-data">
         <section class="mb-3">
           <label for="title" class="form-label">Title</label>
           <input
@@ -44,18 +44,8 @@
           id="price">
         </div>
         
-        </section>
-        <section class="mb-3">
-          <label for="image" class="form-label">Image source</label>
-          <input
-            type="text"
-            name="campground[image]"
-            placeholder=""
-            value="<%=campground.image  %>"
-            required
-            class="form-control"
-          />
-        </section>
+        </section>              
+
         <section class="mb-3">
           <label for="description" class="form-label">Description</label>
           <textarea
@@ -67,6 +57,20 @@
             rows="3"
           /><%=campground.description  %></textarea>
         </section>
+        <div class="mb-3 custom-file">
+          <span>Upload more images:</span>
+              <label for="image" class="form-label custom-file-label"></label>
+              <input class="form-control" type="file" id="image" name="image" multiple>
+        </div>
+        <div class="mb-3">
+          <% campground.image.forEach((img,i)=>{ %>
+          <img src="<%=img.thumbnail  %>" alt="" class="img-thumbnail">
+          <div class="form-check-inline">
+            <input type="checkbox" id="image-<%=i  %>" name="deleteImages[]" value="<%=img.filename  %>">
+          </div>
+          <label for="image-<%=i  %>">Delete?</label>
+          <% }) %>
+        </div>
         <button type="submit" class="btn btn-info">Edit Campground</button>
       </form>
       <a href="/campgrounds">Back to all campgrounds</a>
