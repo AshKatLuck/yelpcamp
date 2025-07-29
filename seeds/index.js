@@ -30,20 +30,23 @@ const userIds = [
 
 const seedDB = async () => {
   await Campground.deleteMany({});
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 100; i++) {
     const randomCityNo = Math.floor(Math.random() * 1000) + 1;
     const randomCity = cities[randomCityNo];
     const randomPrice = Math.floor(Math.random() * 20) + 10;
-    const dataset = await geocoder
-      .forwardGeocode({
-        query: `${randomCity.city},${randomCity.state}`,
-        limit: 2,
-      })
-      .send();
+    // const dataset = await geocoder
+    //   .forwardGeocode({
+    //     query: `${randomCity.city},${randomCity.state}`,
+    //     limit: 2,
+    //   })
+    //   .send();
     const c = new Campground({
       title: `${sample(descriptors)}  ${sample(places)}`,
       location: `${randomCity.city},${randomCity.state}`,
-      geometry: dataset.body.features[0].geometry,
+      geometry: {
+        type: "Point",
+        coordinates: [randomCity.longitude, randomCity.latitude],
+      },
       price: randomPrice,
       image: [
         {
