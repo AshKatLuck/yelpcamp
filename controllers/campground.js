@@ -1,5 +1,8 @@
 const Campground = require("../models/campground");
 const { cloudinary } = require("../cloudinary");
+const MAPBOXToken = process.env.MAPBOX_TOKEN;
+const mbxClient = require("@mapbox/mapbox-sdk/services/geocoding");
+const geocoder = mbxClient({ accessToken: MAPBOXToken });
 
 module.exports.index = async (req, res, next) => {
   const campgrounds = await Campground.find({});
@@ -12,11 +15,19 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.createNewCampground = async (req, res, next) => {
   const campground = new Campground(req.body.campground);
+  const dataset = await geocoder
+    .forwardGeocode({
+      query: `${campground.location}`,
+      limit: 2,
+    })
+    .send();
+  // console.log(dataset.body.features[0].geometry.coordinates);
   campground.author = req.user._id;
   campground.image = req.files.map((f) => ({
     url: f.path,
     filename: f.filename,
   }));
+  campground.geometry = dataset.body.features[0].geometry;
   console.log(campground);
   await campground.save();
   req.flash("success", "New Campground created successfully!!");
@@ -46,16 +57,30 @@ module.exports.editCampground = async (req, res, next) => {
   );
 
   campground.image.push(...images);
+  console.log(campground.location, req.body.campground.location);
+  const dataset = await geocoder
+    .forwardGeocode({
+      query: `${req.body.campground.location}`,
+      limit: 2,
+    })
+    .send();
+  console.log("dataset.body");
+  console.log(dataset.body);
+  campground.geometry = dataset.body.features[0].geometry;
+  console.log("campground.geometry");
+  console.log(campground.geometry);
 
   await campground.save();
-  const imagesToDelete=req.body.deleteImages;
+  const imagesToDelete = req.body.deleteImages;
   if (req.body.deleteImages) {
     // console.log("inside if");
     for (let filename of req.body.deleteImages) {
       await cloudinary.uploader.destroy(filename);
     }
-   
-    const res = await campground.updateOne({ $pull: { image: { filename: { $in: req.body.deleteImages } } } });
+
+    const res = await campground.updateOne({
+      $pull: { image: { filename: { $in: req.body.deleteImages } } },
+    });
     // console.log("res:", res);
   }
 
