@@ -1,7 +1,70 @@
 <% layout('layout/boilerplate') -%>
-<h1>Register</h1>
 
-<form action="/register" method="post" novalidate class="validated-form">
+<div class="container d-flex justify-content-center align-items-center mt-5">
+  <div class="row">
+    <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
+      <div class="card shadow">
+        <div class="card-body">
+          <img
+            src="https://images.unsplash.com/photo-1505735754789-3404132203ed?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt=""
+            class="card-img-top"
+          />
+          <h4 class="card-title mt-3 text-center">Register</h4>
+          <form
+            action="/register"
+            method="post"
+            novalidate
+            class="validated-form"
+          >
+            <section class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                name="username"
+                id="username"
+                placeholder=""
+                class="form-control"
+                required
+                autofocus
+              />
+              <div class="valid-feedback">Looks good!</div>
+            </section>
+            <section class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                name="password"
+                placeholder=""
+                class="form-control"
+                required
+              />
+              <div class="valid-feedback">Looks good!</div>
+            </section>
+            <section class="mb-3">
+              <label for="email" class="mb-2">E-mail</label>
+
+              <input
+                type="email"
+                class="form-control"
+                placeholder=""
+                aria-describedby="basic-addon1"
+                name="email"
+                id="email"
+                required
+              />
+            </section>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-success">Register</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <form action="/register" method="post" novalidate class="validated-form">
   <section class="mb-3">
     <label for="username" class="form-label">Username</label>
     <input
@@ -39,4 +102,4 @@
     />
   </section>
   <button type="submit" class="btn btn-success">Register</button>
-</form>
+</form> -->
