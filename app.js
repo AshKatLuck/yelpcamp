@@ -22,6 +22,7 @@ const User = require("./models/user");
 // const sanitizeV5 = require("./utils/mongoSanitizeV5");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
+const MongoStore = require("connect-mongo");
 
 const app = express();
 // app.set("query parser", "extended"); //for sanitizeV5
@@ -39,8 +40,17 @@ app.engine("ejs", engineMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+const dburl = process.env.DBURL;
+// const dburl = "mongodb://127.0.0.1:27017/yelp-camp";
+
+const store = MongoStore.create({
+  mongoUrl: dburl,
+  touchAfter: 24 * 60 * 60,
+});
+
 //session configuration
 const sessionConfig = {
+  store: store,
   name: "giveANonObviousName",
   secret: "badsecret",
   saveUninitialized: true,
@@ -83,8 +93,20 @@ app.use("/", usersRouter);
 app.use("/campgrounds/:id/review", reviewsRouter);
 app.use("/campgrounds", campgroundsRouter);
 
+//Connect to mongoAtlas
+// mongoose
+//   .connect(dburl)
+//   .then(() => {
+//     console.log("MONGODB CONNECTION DONE");
+//   })
+//   .catch((err) => {
+//     console.log("MONGODB ERROR!!");
+//     console.error(err);
+//   });
+
+//Connect to local db
 mongoose
-  .connect("mongodb://127.0.0.1:27017/yelp-camp")
+  .connect(dburl)
   .then(() => {
     console.log("MONGODB CONNECTION DONE");
   })
