@@ -19,32 +19,32 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
+// const sanitizeV5 = require("./utils/mongoSanitizeV5");
+const mongoSanitize = require("express-mongo-sanitize");
+const helmet = require("helmet");
 
 const app = express();
+// app.set("query parser", "extended"); //for sanitizeV5
+
+app.use(mongoSanitize());
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 // app.use("/public", express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "public")));
-
-mongoose
-  .connect("mongodb://127.0.0.1:27017/yelp-camp")
-  .then(() => {
-    console.log("MONGODB CONNECTION DONE");
-  })
-  .catch((err) => {
-    console.log("MONGODB ERROR!!");
-    console.error(err);
-  });
+// app.use(sanitizeV5());
 
 app.engine("ejs", engineMate);
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
 //session configuration
 const sessionConfig = {
+  name: "giveANonObviousName",
   secret: "badsecret",
   saveUninitialized: true,
+  // secure:true,
   resave: false,
   cookie: {
     httpOnly: true,
@@ -65,7 +65,14 @@ passport.deserializeUser(User.deserializeUser());
 //middleware for flash
 
 app.use(flash());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    xDownloadOptions: false,
+  })
+);
 app.use((req, res, next) => {
+  // console.log(req.query); //for testing teh sanitizing
   res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
@@ -75,6 +82,16 @@ app.use((req, res, next) => {
 app.use("/", usersRouter);
 app.use("/campgrounds/:id/review", reviewsRouter);
 app.use("/campgrounds", campgroundsRouter);
+
+mongoose
+  .connect("mongodb://127.0.0.1:27017/yelp-camp")
+  .then(() => {
+    console.log("MONGODB CONNECTION DONE");
+  })
+  .catch((err) => {
+    console.log("MONGODB ERROR!!");
+    console.error(err);
+  });
 
 // app.get("/fakeUser", async (req, res) => {
 //   const user = new User({ email: "asha@gmail.com", username: "asha" });

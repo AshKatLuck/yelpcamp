@@ -6,6 +6,7 @@ const { reviewJoiSchema } = require("../joiSchema");
 const Campground = require("../models/campground");
 const { isLoggedIn, isReviewAuthor } = require("../middleware");
 const reviews = require("../controllers/review");
+const ExpressError = require("../utils/ExpressError");
 
 const validateReviews = (req, res, next) => {
   const { error } = reviewJoiSchema.validate(req.body);
